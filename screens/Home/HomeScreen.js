@@ -1,10 +1,11 @@
 import React from 'react';
-import { ScrollView, TouchableOpacity, View, TextInput } from 'react-native';
+import { ScrollView, View, TextInput } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Icon, Button, Text } from 'native-base';
+import { Button, Text } from 'native-base';
 import LoadingModal from '../../components/LoadingModal/LoadingModal';
-import { getUsers, deleteUser, filterNames } from '../../actions/users';
+import ListUsers from '../../containers/ListUsers/ListUsers';
+import { getUsers, filterNames } from '../../actions/users';
 import styles from './styles';
 
 class HomeScreen extends React.Component {
@@ -27,17 +28,6 @@ class HomeScreen extends React.Component {
   }
 
   /**
-   * Go to User page
-   *
-   * @param {string} id
-   */
-  gotoUser(id) {
-    const { navigation } = this.props;
-
-    navigation.navigate('User', { id });
-  }
-
-  /**
    * Search Users handler
    *
    * @param {string} text
@@ -49,17 +39,6 @@ class HomeScreen extends React.Component {
     this.setState({ search: text });
 
     filterNames(users, text);
-  }
-
-  /**
-   * Go to User page
-   *
-   * @param {string} id
-   */
-  deleteUser(id) {
-    const { deleteUser } = this.props;
-
-    deleteUser(id);
   }
 
   render() {
@@ -74,48 +53,13 @@ class HomeScreen extends React.Component {
             <LoadingModal loading={loading}></LoadingModal>
           ) : (
             <View style={styles.getStartedContainer}>
+              <Text>Search Users</Text>
               <TextInput
                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                 onChangeText={text => this.searchName(text)}
                 value={search}
               />
-              {users.data.map(user => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => this.gotoUser(user.id)}
-                    key={user.id.toString()}
-                    style={{
-                      backgroundColor: 'red',
-                      marginBottom: 10,
-                      padding: 10,
-                      justifyContent: 'flex-start',
-                      flexDirection: 'row',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-                      {user.name}
-                    </Text>
-                    <Text
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-                      {user.role}
-                    </Text>
-                    <View
-                      style={{
-                        flex: 1,
-                      }}
-                    >
-                      <Icon name="trash" onPress={() => this.deleteUser(user.id)} />
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
+              <ListUsers navigation={navigation} data={users.data}></ListUsers>
             </View>
           )}
         </ScrollView>
@@ -136,7 +80,6 @@ HomeScreen.navigationOptions = {
 
 HomeScreen.propTypes = {
   getUsers: PropTypes.func.isRequired,
-  deleteUser: PropTypes.func.isRequired,
   filterNames: PropTypes.func.isRequired,
   users: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
@@ -160,7 +103,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   getUsers,
-  deleteUser,
   filterNames,
 };
 

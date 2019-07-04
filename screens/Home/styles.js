@@ -29,6 +29,6 @@ export default StyleSheet.create({
     }),
     alignItems: 'center',
     backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
+    padding: 20,
   },
 });
