@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { Platform } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 /**
@@ -33,3 +34,13 @@ export const errorToastMessage = (
     backgroundColor,
   });
 };
+
+/**
+ * Handler icons name depending on platform
+ *
+ * @param {string} platformIcon
+ * @param {string} iconName
+ * @returns {string}
+ */
+export const getIconName = (platformIcon, iconName) =>
+  platformIcon ? (Platform.OS === 'ios' ? `ios-${iconName}` : `md-${iconName}`) : iconName;

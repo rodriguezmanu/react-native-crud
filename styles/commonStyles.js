@@ -17,17 +17,6 @@ export default StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-  notCompleted: {},
-  completedBackground: {
-    backgroundColor: colors.greyLight,
-  },
-  completed: {
-    color: colors.grey,
-  },
-  routeName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
   bold: {
     fontSize: 18,
     fontWeight: 'bold',

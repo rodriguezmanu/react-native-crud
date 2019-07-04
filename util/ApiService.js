@@ -2,6 +2,7 @@ import axios from 'axios';
 import { AsyncStorage } from 'react-native';
 import _ from 'lodash';
 import NavigationService from '../NavigationService';
+import getEnv from '../environments';
 
 const ApiService = options => {
   /**
@@ -19,7 +20,7 @@ const ApiService = options => {
     }
 
     return axios.create({
-      baseURL: 'http://localhost:8080/api',
+      baseURL: getEnv.ROOT_URL,
       timeout: 10000,
       headers,
     });

@@ -3,8 +3,8 @@ import { Platform, ScrollView, StyleSheet, TextInput, View } from 'react-native'
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button, Text } from 'native-base';
-import LoadingModal from '../components/LoadingModal/LoadingModal';
-import { getUserById, updateUser, addNewUser } from '../actions/users';
+import LoadingModal from '../../components/LoadingModal/LoadingModal';
+import { getUserById, updateUser, addNewUser } from '../../actions/users';
 
 class UserScreen extends React.PureComponent {
   state = {

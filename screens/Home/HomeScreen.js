@@ -1,10 +1,11 @@
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, TouchableOpacity, View, TextInput } from 'react-native';
+import { ScrollView, TouchableOpacity, View, TextInput } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Icon, Button, Text } from 'native-base';
-import LoadingModal from '../components/LoadingModal/LoadingModal';
-import { getUsers, deleteUser, filterNames } from '../actions/users';
+import LoadingModal from '../../components/LoadingModal/LoadingModal';
+import { getUsers, deleteUser, filterNames } from '../../actions/users';
+import styles from './styles';
 
 class HomeScreen extends React.Component {
   state = {
@@ -12,13 +13,17 @@ class HomeScreen extends React.Component {
   };
 
   componentWillMount() {
-    const { getUsers } = this.props;
+    const { getUsers, navigation } = this.props;
 
     getUsers();
 
-    this.willFocusListener = this.props.navigation.addListener('willFocus', () => {
+    this.willFocusListener = navigation.addListener('willFocus', () => {
       getUsers();
     });
+  }
+
+  componentWillUnmount() {
+    this.willFocusListener.remove();
   }
 
   /**
@@ -32,10 +37,18 @@ class HomeScreen extends React.Component {
     navigation.navigate('User', { id });
   }
 
+  /**
+   * Search Users handler
+   *
+   * @param {string} text
+   * @memberof HomeScreen
+   */
   searchName(text) {
+    const { filterNames, users } = this.props;
+
     this.setState({ search: text });
 
-    this.props.filterNames(this.props.users, text);
+    filterNames(users, text);
   }
 
   /**
@@ -50,8 +63,9 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    const { users } = this.props;
+    const { users, navigation } = this.props;
     const { loading } = users;
+    const { search } = this.state;
 
     return (
       <View style={styles.container}>
@@ -63,7 +77,7 @@ class HomeScreen extends React.Component {
               <TextInput
                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                 onChangeText={text => this.searchName(text)}
-                value={this.state.search}
+                value={search}
               />
               {users.data.map(user => {
                 return (
@@ -107,7 +121,7 @@ class HomeScreen extends React.Component {
         </ScrollView>
 
         <View style={styles.tabBarInfoContainer}>
-          <Button onPress={() => this.props.navigation.navigate('User')}>
+          <Button onPress={() => navigation.navigate('User')}>
             <Text>Add new</Text>
           </Button>
         </View>
@@ -123,6 +137,7 @@ HomeScreen.navigationOptions = {
 HomeScreen.propTypes = {
   getUsers: PropTypes.func.isRequired,
   deleteUser: PropTypes.func.isRequired,
+  filterNames: PropTypes.func.isRequired,
   users: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     data: PropTypes.arrayOf(
@@ -135,6 +150,7 @@ HomeScreen.propTypes = {
   }).isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
+    addListener: PropTypes.func.isRequired,
   }).isRequired,
 };
 
@@ -152,92 +168,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(HomeScreen);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    // alignItems: 'center',
-    marginHorizontal: 20,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
-});
