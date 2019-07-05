@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Button, Text } from 'native-base';
@@ -16,10 +16,11 @@ class UserScreen extends React.PureComponent {
   componentWillMount() {
     const { getUserById, navigation } = this.props;
     const id = navigation.getParam('id');
-
+    // update mode
     if (id) {
       getUserById(id);
     } else {
+      // add mode
       this.setState({ mode: 'add', name: '' });
     }
   }
@@ -48,7 +49,7 @@ class UserScreen extends React.PureComponent {
   render() {
     const { users } = this.props;
     const { loading, currentUser } = users;
-    const { mode, name } = this.state;
+    const { name, mode } = this.state;
 
     return (
       <View style={styles.container}>
@@ -60,12 +61,11 @@ class UserScreen extends React.PureComponent {
               <TextInput
                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                 onChangeText={text => this.setState({ name: text })}
-                value={name || currentUser.name}
+                value={mode === 'add' ? name : name || currentUser.name}
               />
-              <Text>{currentUser.role}</Text>
               <View>
-                <Button keyboardShouldPersistTaps="handled" onPress={() => this.submit()}>
-                  <Text>submit</Text>
+                <Button full onPress={() => this.submit()}>
+                  <Text>Submit</Text>
                 </Button>
               </View>
             </View>

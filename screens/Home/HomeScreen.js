@@ -1,8 +1,8 @@
 import React from 'react';
-import { ScrollView, View, TextInput } from 'react-native';
+import { View } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button, Text } from 'native-base';
+import { Container, Content, Button, Text, Input, Form, Item, Label } from 'native-base';
 import LoadingModal from '../../components/LoadingModal/LoadingModal';
 import ListUsers from '../../containers/ListUsers/ListUsers';
 import { getUsers, filterNames } from '../../actions/users';
@@ -46,30 +46,31 @@ class HomeScreen extends React.Component {
     const { loading } = users;
     const { search } = this.state;
 
-    return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          {loading && users.data ? (
-            <LoadingModal loading={loading}></LoadingModal>
-          ) : (
-            <View style={styles.getStartedContainer}>
-              <Text>Search Users</Text>
-              <TextInput
-                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                onChangeText={text => this.searchName(text)}
-                value={search}
-              />
-              <ListUsers navigation={navigation} data={users.data}></ListUsers>
-            </View>
-          )}
-        </ScrollView>
+    if (loading && users.data) {
+      return <LoadingModal loading={loading}></LoadingModal>;
+    }
 
-        <View style={styles.tabBarInfoContainer}>
-          <Button onPress={() => navigation.navigate('User')}>
+    return (
+      <Container>
+        <View style={styles.header}>
+          <View style={styles.getStartedContainer}>
+            <Form>
+              <Item stackedLabel>
+                <Label>Search users</Label>
+                <Input onChangeText={text => this.searchName(text)} value={search} />
+              </Item>
+            </Form>
+          </View>
+        </View>
+        <Content>
+          <ListUsers navigation={navigation} data={users.data}></ListUsers>
+        </Content>
+        <View style={styles.footer}>
+          <Button full onPress={() => navigation.navigate('User')}>
             <Text>Add new</Text>
           </Button>
         </View>
-      </View>
+      </Container>
     );
   }
 }
