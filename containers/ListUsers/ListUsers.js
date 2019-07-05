@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, Alert } from 'react-native';
 import { List, ListItem, Right, Body, Icon, Text, Left } from 'native-base';
 import { connect } from 'react-redux';
 import { deleteUser } from '../../actions/users';
@@ -14,7 +14,25 @@ class ListUsers extends React.Component {
   deleteUser(id) {
     const { deleteUser } = this.props;
 
-    deleteUser(id);
+    Alert.alert(
+      'Confirmation',
+      'Do you want to delete this user?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            deleteUser(id);
+          },
+          style: 'cancel',
+        },
+        {
+          text: 'No',
+          onPress: () => {},
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false }
+    );
   }
 
   /**

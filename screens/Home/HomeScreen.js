@@ -6,6 +6,7 @@ import { Container, Content, Button, Text, Input, Form, Item, Label } from 'nati
 import LoadingModal from '../../components/LoadingModal/LoadingModal';
 import ListUsers from '../../containers/ListUsers/ListUsers';
 import { getUsers, filterNames } from '../../actions/users';
+import { getUsersData, getLoadingUsers } from '../../selectors/users';
 import styles from './styles';
 
 class HomeScreen extends React.Component {
@@ -42,11 +43,10 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    const { users, navigation } = this.props;
-    const { loading } = users;
+    const { users, navigation, loading } = this.props;
     const { search } = this.state;
 
-    if (loading && users.data) {
+    if (loading && users) {
       return <LoadingModal loading={loading}></LoadingModal>;
     }
 
@@ -63,7 +63,7 @@ class HomeScreen extends React.Component {
           </View>
         </View>
         <Content>
-          <ListUsers navigation={navigation} data={users.data}></ListUsers>
+          <ListUsers navigation={navigation} data={users}></ListUsers>
         </Content>
         <View style={styles.footer}>
           <Button full onPress={() => navigation.navigate('User')}>
@@ -82,16 +82,14 @@ HomeScreen.navigationOptions = {
 HomeScreen.propTypes = {
   getUsers: PropTypes.func.isRequired,
   filterNames: PropTypes.func.isRequired,
-  users: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    data: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        role: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-  }).isRequired,
+  loading: PropTypes.bool.isRequired,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      role: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
     addListener: PropTypes.func.isRequired,
@@ -99,7 +97,8 @@ HomeScreen.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  users: state.users,
+  users: getUsersData(state),
+  loading: getLoadingUsers(state),
 });
 
 const mapDispatchToProps = {

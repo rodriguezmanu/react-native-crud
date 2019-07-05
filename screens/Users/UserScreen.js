@@ -1,10 +1,12 @@
 import React from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInput } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button, Text } from 'native-base';
+import { Button, Text, Container, Content, View } from 'native-base';
+import { get } from 'lodash';
 import LoadingModal from '../../components/LoadingModal/LoadingModal';
 import { getUserById, updateUser, addNewUser } from '../../actions/users';
+import { getUserData, getLoadingUsers } from '../../selectors/users';
 import styles from './styles';
 
 class UserScreen extends React.PureComponent {
@@ -16,13 +18,9 @@ class UserScreen extends React.PureComponent {
   componentWillMount() {
     const { getUserById, navigation } = this.props;
     const id = navigation.getParam('id');
-    // update mode
-    if (id) {
-      getUserById(id);
-    } else {
-      // add mode
-      this.setState({ mode: 'add', name: '' });
-    }
+
+    // update or add mode
+    id ? getUserById(id) : this.setState({ mode: 'add', name: '' });
   }
 
   /**
@@ -32,46 +30,39 @@ class UserScreen extends React.PureComponent {
    */
   submit() {
     const { mode, name } = this.state;
-    const { addNewUser, updateUser, users } = this.props;
+    const { addNewUser, updateUser, user } = this.props;
 
-    if (mode === 'add') {
-      addNewUser({ name });
-    } else {
-      const params = {
-        id: users.currentUser.id,
-        name: name || users.currentUser.name,
-      };
-
-      updateUser(params);
-    }
+    mode === 'add'
+      ? addNewUser({ name })
+      : updateUser({
+          id: get(user, 'id'),
+          name: name || get(user, 'name'),
+        });
   }
 
   render() {
-    const { users } = this.props;
-    const { loading, currentUser } = users;
+    const { loading, user } = this.props;
     const { name, mode } = this.state;
 
+    if (loading && user) {
+      return <LoadingModal loading={loading}></LoadingModal>;
+    }
+
     return (
-      <View style={styles.container}>
-        <View style={styles.container} contentContainerStyle={styles.contentContainer}>
-          {loading && currentUser ? (
-            <LoadingModal loading={loading}></LoadingModal>
-          ) : (
-            <View style={styles.getStartedContainer}>
-              <TextInput
-                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                onChangeText={text => this.setState({ name: text })}
-                value={mode === 'add' ? name : name || currentUser.name}
-              />
-              <View>
-                <Button full onPress={() => this.submit()}>
-                  <Text>Submit</Text>
-                </Button>
-              </View>
-            </View>
-          )}
-        </View>
-      </View>
+      <Container>
+        <Content style={styles.contentContainer}>
+          <TextInput
+            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+            onChangeText={text => this.setState({ name: text })}
+            value={mode === 'add' ? name : name || get(user, 'name')}
+          />
+          <View style={styles.contentContainer}>
+            <Button full onPress={() => this.submit()}>
+              <Text>Submit</Text>
+            </Button>
+          </View>
+        </Content>
+      </Container>
     );
   }
 }
@@ -84,14 +75,8 @@ UserScreen.propTypes = {
   getUserById: PropTypes.func.isRequired,
   addNewUser: PropTypes.func.isRequired,
   updateUser: PropTypes.func.isRequired,
-  users: PropTypes.shape({
-    loading: PropTypes.bool.isRequired,
-    currentUser: PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      role: PropTypes.string.isRequired,
-    }),
-  }).isRequired,
+  loading: PropTypes.bool.isRequired,
+  user: PropTypes.shape({}).isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
     getParam: PropTypes.func.isRequired,
@@ -99,7 +84,8 @@ UserScreen.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  users: state.users,
+  user: getUserData(state),
+  loading: getLoadingUsers(state),
 });
 
 const mapDispatchToProps = {
