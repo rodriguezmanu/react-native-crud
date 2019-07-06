@@ -44,3 +44,10 @@ export const errorToastMessage = (
  */
 export const getIconName = (platformIcon, iconName) =>
   platformIcon ? (Platform.OS === 'ios' ? `ios-${iconName}` : `md-${iconName}`) : iconName;
+
+/**
+ * Validation redux form
+ *
+ * @param {string} value
+ */
+export const required = value => (value ? undefined : 'Required');

@@ -5,6 +5,7 @@ import {
   UPDATE_USER,
   ADD_USER,
   FILTER_NAME_USER,
+  UPDATE_MODE,
 } from '../constants/ActionsTypes';
 
 const initialState = {
@@ -15,6 +16,7 @@ const initialState = {
   errorMsg: '',
   loading: false,
   originalUsers: [],
+  mode: 'update',
 };
 
 export default function(state = initialState, action) {
@@ -65,6 +67,8 @@ export default function(state = initialState, action) {
         errorMsg: '',
         data: payload.result,
       };
+    case UPDATE_MODE.SUCCESS:
+      return { ...state, mode: payload.mode };
 
     default:
       return state;

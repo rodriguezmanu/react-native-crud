@@ -7,3 +7,4 @@ export const DELETE_USER = createAsyncActionType('DELETE_USER');
 export const UPDATE_USER = createAsyncActionType('UPDATE_USER');
 export const ADD_USER = createAsyncActionType('ADD_USER');
 export const FILTER_NAME_USER = createAsyncActionType('FILTER_NAME_USER');
+export const UPDATE_MODE = createAsyncActionType('UPDATE_MODE');

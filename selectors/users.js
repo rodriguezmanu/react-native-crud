@@ -13,6 +13,11 @@ export const getUserData = createSelector(
   user => user
 );
 
+export const getModeUser = createSelector(
+  getUsers,
+  users => users.mode
+);
+
 export const getLoadingUsers = createSelector(
   getUsers,
   users => users.loading

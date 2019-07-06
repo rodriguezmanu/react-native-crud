@@ -5,6 +5,7 @@ import {
   UPDATE_USER,
   ADD_USER,
   FILTER_NAME_USER,
+  UPDATE_MODE,
 } from '../constants/ActionsTypes';
 import NavigationService from '../NavigationService';
 import { ApiService, errorToastMessage } from '../util';
@@ -160,5 +161,17 @@ export const filterNames = (users, text) => (dispatch, getState) => {
   dispatch({
     type: FILTER_NAME_USER.SUCCESS,
     payload: { result, users },
+  });
+};
+
+/**
+ * Update mode add or update to redux form initial values
+ *
+ * @param {string} text
+ */
+export const updateMode = mode => dispatch => {
+  dispatch({
+    type: UPDATE_MODE.SUCCESS,
+    payload: { mode },
   });
 };
